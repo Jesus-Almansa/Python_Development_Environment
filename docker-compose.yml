@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        JC_PASSWORD: ${JC_PASSWORD}
+        ALVARO_PASSWORD: ${ALVARO_PASSWORD}
+    container_name: pruebas_usuario2
+    hostname: yharnam
+    env_file:
+      - .env  # Carga las variables de entorno desde el archivo .env
+    volumes:
+      - /home/j/Desarrollo/PRUEBAS:/usr/src/app/workspace
+    stdin_open: true
+    tty: true
+    user: "jc"  # Ejecutar como el usuario jc
