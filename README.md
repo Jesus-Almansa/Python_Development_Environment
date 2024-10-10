@@ -1,13 +1,13 @@
 # Proyecto Docker con Usuarios y Permisos para Desarrollo Colaborativo
 
-Este proyecto incluye un entorno de desarrollo configurado con Docker para gestionar múltiples usuarios (`jc` y `alvaro`), asegurando que ambos tengan permisos completos sobre los archivos y puedan realizar operaciones de Git desde dentro del contenedor sin problemas de permisos. Se utiliza Docker y Docker Compose para crear un entorno colaborativo donde los usuarios puedan modificar y trabajar en los archivos de manera fluida.
+Este proyecto incluye un entorno de desarrollo configurado con Docker para gestionar múltiples usuarios (`user1` y `user2`), asegurando que ambos tengan permisos completos sobre los archivos y puedan realizar operaciones de Git desde dentro del contenedor sin problemas de permisos. Se utiliza Docker y Docker Compose para crear un entorno colaborativo donde los usuarios puedan modificar y trabajar en los archivos de manera fluida.
 
 ## Características
 
-- **Dockerfile** configurado para crear dos usuarios: `jc` y `alvaro`.
+- **Dockerfile** configurado para crear dos usuarios: `user1` y `user2`.
 - Ambos usuarios tienen permisos de `sudo` sin necesidad de contraseña.
-- Los archivos en el directorio de trabajo se configuran automáticamente para pertenecer a `jc` y tener permisos adecuados.
-- El directorio del proyecto y los archivos `.git` son accesibles por `jc` para operaciones de Git desde dentro del contenedor.
+- Los archivos en el directorio de trabajo se configuran automáticamente para pertenecer a `user1` y tener permisos adecuados.
+- El directorio del proyecto y los archivos `.git` son accesibles por `user1` para operaciones de Git desde dentro del contenedor.
 - Uso de variables de entorno para gestionar las contraseñas de los usuarios de manera segura.
 
 ## Requisitos
@@ -30,8 +30,8 @@ En la raíz del proyecto, crea un archivo `.env` para almacenar las contraseñas
 
 ```bash
 # .env
-JC_PASSWORD=mi_contraseña_segura_jc
-ALVARO_PASSWORD=mi_contraseña_segura_alvaro
+USER1_PASSWORD=mi_contraseña_segura_user1
+USER2_PASSWORD=mi_contraseña_segura_user2
 ```
 
 **Nota**: Asegúrate de no subir este archivo al repositorio. Ya está añadido en `.gitignore` para evitar que se suba por error.
@@ -53,7 +53,7 @@ Una vez que el contenedor esté en funcionamiento, puedes acceder al contenedor 
 docker exec -it pruebas_usuario2 bash
 ```
 
-Dentro del contenedor, verifica que los usuarios `jc` y `alvaro` existen y que ambos tienen acceso a los archivos del proyecto.
+Dentro del contenedor, verifica que los usuarios `user1` y `user2` existen y que ambos tienen acceso a los archivos del proyecto.
 
 ### Estructura de archivos
 
@@ -67,26 +67,26 @@ Dentro del contenedor, verifica que los usuarios `jc` y `alvaro` existen y que a
 
 ## Detalles del Dockerfile
 
-- **Crea usuarios `jc` y `alvaro`**: Estos usuarios son creados durante la construcción del contenedor. Se utiliza la variable de entorno para configurar sus contraseñas.
+- **Crea usuarios `user1` y `user2`**: Estos usuarios son creados durante la construcción del contenedor. Se utiliza la variable de entorno para configurar sus contraseñas.
   
   ```Dockerfile
-  ARG JC_PASSWORD
-  ARG ALVARO_PASSWORD
-  RUN useradd -ms /bin/bash jc && \
-      echo "jc:${JC_PASSWORD}" | chpasswd && \
-      usermod -aG sudo jc && \
-      useradd -ms /bin/bash alvaro && \
-      echo "alvaro:${ALVARO_PASSWORD}" | chpasswd && \
-      usermod -aG sudo alvaro
+  ARG user1_PASSWORD
+  ARG user2_PASSWORD
+  RUN useradd -ms /bin/bash user1 && \
+      echo "user1:${user1_PASSWORD}" | chpasswd && \
+      usermod -aG sudo user1 && \
+      useradd -ms /bin/bash user2 && \
+      echo "user2:${user2_PASSWORD}" | chpasswd && \
+      usermod -aG sudo user2
   ```
 
-- **Permisos de usuario**: Cambia la propiedad de todos los archivos del directorio de trabajo (`/usr/src/app/workspace`) a `jc` para que tenga control total sobre ellos.
+- **Permisos de usuario**: Cambia la propiedad de todos los archivos del directorio de trabajo (`/usr/src/app/workspace`) a `user1` para que tenga control total sobre ellos.
 
   ```Dockerfile
-  RUN chown -R jc:jc /usr/src/app/workspace
+  RUN chown -R user1:user1 /usr/src/app/workspace
   ```
 
-- **Permisos del proyecto Git**: Se asegura de que todos los archivos y directorios dentro del proyecto tengan los permisos correctos para que `jc` pueda realizar operaciones de Git sin problemas.
+- **Permisos del proyecto Git**: Se asegura de que todos los archivos y directorios dentro del proyecto tengan los permisos correctos para que `user1` pueda realizar operaciones de Git sin problemas.
 
   ```Dockerfile
   RUN find /usr/src/app/workspace -type d -exec chmod 755 {} \; && \
@@ -110,8 +110,8 @@ El archivo `docker-compose.yml` automatiza la configuración y ejecución del co
   build:
     context: .
     args:
-      JC_PASSWORD: ${JC_PASSWORD}
-      ALVARO_PASSWORD: ${ALVARO_PASSWORD}
+      user1_PASSWORD: ${user1_PASSWORD}
+      user2_PASSWORD: ${user2_PASSWORD}
   ```
 
 - **Volúmenes**: Monta el directorio local de desarrollo en el contenedor para asegurar que los cambios realizados en los archivos se sincronicen.
@@ -123,7 +123,7 @@ El archivo `docker-compose.yml` automatiza la configuración y ejecución del co
 
 ## Uso de Git dentro del contenedor
 
-Una vez que estás dentro del contenedor como `jc`, puedes ejecutar operaciones de Git sin problemas de permisos:
+Una vez que estás dentro del contenedor como `user1`, puedes ejecutar operaciones de Git sin problemas de permisos:
 
 ```bash
 git add .
