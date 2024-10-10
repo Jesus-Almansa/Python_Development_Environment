@@ -5,12 +5,14 @@ services:
       args:
         JC_PASSWORD: ${JC_PASSWORD}
         ALVARO_PASSWORD: ${ALVARO_PASSWORD}
-    container_name: pruebas_usuario2
+    container_name: dev-env
     hostname: yharnam
     env_file:
-      - .env  # Carga las variables de entorno desde el archivo .env
+      - .env
     volumes:
-      - /home/j/Desarrollo/PRUEBAS:/usr/src/app/workspace
+      - /home/j/Desarrollo/:/usr/src/app/workspace
     stdin_open: true
     tty: true
-    user: "jc"  # Ejecutar como el usuario jc
+    user: "jc"
+#    command: bash -c "sudo chown -R jc:jc /usr/src/app/workspace && bash"
+    entrypoint: ["bash", "-c", "sudo chown -R jc:jc /usr/src/app/workspace && bash"]
